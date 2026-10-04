@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>시은 PC방</title>
 
   <style>
@@ -12,63 +13,892 @@
 
     body {
       margin: 0;
-      background: #24242c;
+      background: #f5f5f5;
+      color: #222;
+      font-family: Arial, "Noto Sans KR", sans-serif;
+    }
+
+    /* 상단 */
+    header {
+      background: #17171c;
       color: white;
-      font-family: Arial, sans-serif;
+      padding: 28px 20px 24px;
       text-align: center;
     }
 
-    header {
-      padding: 50px 20px;
-      background: #18181d;
-    }
-
-    h1 {
-      margin: 0 0 10px;
-      font-size: 36px;
-    }
-
-    p {
+    header h1 {
       margin: 0;
-      color: #cccccc;
+      font-size: 30px;
     }
 
-    .test {
-      margin: 50px auto;
-      max-width: 500px;
-      padding: 30px;
-      background: #33333d;
+    header p {
+      margin: 8px 0 0;
+      color: #bdbdc5;
+      font-size: 14px;
+    }
+
+    /* 카테고리 */
+    .categories {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 12px;
+      background: white;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .category-btn {
+      flex: 0 0 auto;
+      border: 1px solid #ddd;
+      background: white;
+      padding: 10px 16px;
       border-radius: 20px;
+      font-size: 14px;
+      cursor: pointer;
     }
 
-    button {
-      margin-top: 20px;
-      padding: 12px 25px;
+    .category-btn.active {
+      background: #222;
+      color: white;
+      border-color: #222;
+    }
+
+    /* 메뉴 */
+    .menu-area {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 25px 16px 120px;
+    }
+
+    .category-title {
+      margin: 5px 0 18px;
+      font-size: 22px;
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .menu-card {
+      background: white;
+      border-radius: 16px;
+      padding: 18px;
+      min-height: 150px;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .menu-name {
+      font-size: 17px;
+      font-weight: bold;
+      line-height: 1.4;
+    }
+
+    .menu-icon {
+      font-size: 38px;
+      margin-bottom: 10px;
+    }
+
+    .add-btn {
+      width: 100%;
+      margin-top: 18px;
+      padding: 11px;
       border: 0;
       border-radius: 10px;
-      background: white;
-      color: #222;
-      font-size: 16px;
+      background: #222;
+      color: white;
+      font-size: 14px;
       cursor: pointer;
+    }
+
+    .add-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* 장바구니 버튼 */
+    .cart-button {
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      z-index: 20;
+
+      border: 0;
+      border-radius: 30px;
+      padding: 15px 25px;
+
+      background: #17171c;
+      color: white;
+
+      font-size: 16px;
+      font-weight: bold;
+
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+      cursor: pointer;
+    }
+
+    /* 장바구니 팝업 */
+    .cart-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 30;
+      background: rgba(0,0,0,0.5);
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .cart-overlay.show {
+      display: flex;
+    }
+
+    .cart {
+      width: 100%;
+      max-width: 600px;
+      max-height: 85vh;
+      overflow-y: auto;
+
+      background: white;
+      border-radius: 22px 22px 0 0;
+      padding: 24px;
+    }
+
+    .cart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .cart-header h2 {
+      margin: 0;
+    }
+
+    .close-btn {
+      border: 0;
+      background: #eee;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .cart-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 14px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .cart-item-name {
+      flex: 1;
+      font-weight: bold;
+      line-height: 1.4;
+    }
+
+    .quantity {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .quantity button {
+      width: 30px;
+      height: 30px;
+      border: 1px solid #ddd;
+      background: white;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .delete-btn {
+      border: 0;
+      background: transparent;
+      color: #999;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .empty-cart {
+      text-align: center;
+      padding: 40px 10px;
+      color: #999;
+    }
+
+    .order-btn {
+      width: 100%;
+      margin-top: 20px;
+      padding: 15px;
+      border: 0;
+      border-radius: 12px;
+      background: #222;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    /* 주문 완료 */
+    .order-complete {
+      display: none;
+      text-align: center;
+      padding: 35px 10px;
+    }
+
+    .order-complete.show {
+      display: block;
+    }
+
+    .order-complete .emoji {
+      font-size: 55px;
+    }
+
+    .order-complete h2 {
+      margin: 15px 0 8px;
+    }
+
+    .order-complete p {
+      color: #777;
+      line-height: 1.6;
+    }
+
+    /* PC */
+    @media (min-width: 700px) {
+      .menu-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .cart-overlay {
+        align-items: center;
+      }
+
+      .cart {
+        border-radius: 22px;
+      }
+    }
+
+    /* 모바일 */
+    @media (max-width: 450px) {
+      .menu-grid {
+        grid-template-columns: 1fr;
+      }
+
+      header h1 {
+        font-size: 26px;
+      }
     }
   </style>
 </head>
 
 <body>
 
+  <!-- 상단 -->
   <header>
     <h1>🎮 시은 PC방</h1>
     <p>우리 둘만의 PC방 주문 사이트</p>
   </header>
 
-  <div class="test">
-    <h2>사이트 연결 성공! 🎉</h2>
-    <p>여기까지 보이면 정상적으로 작동하는 거야.</p>
+  <!-- 카테고리 -->
+  <nav class="categories">
 
-    <button onclick="alert('버튼도 정상 작동해!')">
-      테스트 버튼
+    <button class="category-btn active" onclick="showCategory('밥 식사류', this)">
+      🍚 밥 식사류
     </button>
+
+    <button class="category-btn" onclick="showCategory('면 식사류', this)">
+      🍜 면 식사류
+    </button>
+
+    <button class="category-btn" onclick="showCategory('간단 사이드', this)">
+      🍢 간단 사이드
+    </button>
+
+    <button class="category-btn" onclick="showCategory('마시는 음료', this)">
+      🥤 마시는 음료
+    </button>
+
+  </nav>
+
+  <!-- 메뉴 -->
+  <main class="menu-area">
+
+    <h2 class="category-title" id="categoryTitle">
+      🍚 밥 식사류
+    </h2>
+
+    <div class="menu-grid" id="menuGrid"></div>
+
+  </main>
+
+  <!-- 장바구니 버튼 -->
+  <button class="cart-button" onclick="openCart()">
+    🛒 장바구니 <span id="cartCount">0</span>
+  </button>
+
+  <!-- 장바구니 -->
+  <div class="cart-overlay" id="cartOverlay">
+
+    <div class="cart">
+
+      <div class="cart-header">
+        <h2>🛒 장바구니</h2>
+
+        <button class="close-btn" onclick="closeCart()">
+          ×
+        </button>
+      </div>
+
+      <div id="cartItems"></div>
+
+      <button class="order-btn" onclick="placeOrder()">
+        주문하기
+      </button>
+
+      <div class="order-complete" id="orderComplete">
+
+        <div class="emoji">🎉</div>
+
+        <h2>주문이 접수됐어요!</h2>
+
+        <p>
+          맛있게 준비해드릴게요 😊<br>
+          주문번호:
+          <strong id="orderNumber"></strong>
+        </p>
+
+        <button class="order-btn" onclick="closeCart()">
+          메뉴로 돌아가기
+        </button>
+
+      </div>
+
+    </div>
+
   </div>
+
+
+  <script>
+
+    /* =========================
+       메뉴 데이터
+    ========================= */
+
+    const menus = {
+
+      "밥 식사류": [
+
+        {
+          name: "김치 볶음밥",
+          icon: "🍳"
+        },
+
+        {
+          name: "계란양파 볶음밥",
+          icon: "🍳"
+        },
+
+        {
+          name: "미니 돈까스 + 미니주먹밥",
+          icon: "🍱"
+        },
+
+        {
+          name: "매운 어묵 꼬마김밥 + 들기름 김치 명란밥",
+          icon: "🍙"
+        }
+
+      ],
+
+
+      "면 식사류": [
+
+        {
+          name: "신라면 블랙",
+          icon: "🍜"
+        },
+
+        {
+          name: "참깨라면",
+          icon: "🍜"
+        },
+
+        {
+          name: "오모리김치찌개라면",
+          icon: "🍜"
+        },
+
+        {
+          name: "짜파게티",
+          icon: "🍜"
+        },
+
+        {
+          name: "너구리",
+          icon: "🍜"
+        },
+
+        {
+          name: "비빔면",
+          icon: "🍜"
+        },
+
+        {
+          name: "우동",
+          icon: "🍜"
+        },
+
+        {
+          name: "쌀국수",
+          icon: "🍜"
+        },
+
+        {
+          name: "불파게티",
+          icon: "🍜"
+        },
+
+        {
+          name: "짜계치",
+          icon: "🍜"
+        },
+
+        {
+          name: "계란 추가",
+          icon: "🥚"
+        }
+
+      ],
+
+
+      "간단 사이드": [
+
+        {
+          name: "김말이",
+          icon: "🥟"
+        },
+
+        {
+          name: "용가리",
+          icon: "🍗"
+        },
+
+        {
+          name: "만두",
+          icon: "🥟"
+        }
+
+      ],
+
+
+      "마시는 음료": [
+
+        {
+          name: "ICE 아메리카노",
+          icon: "🧊"
+        },
+
+        {
+          name: "HOT 아메리카노",
+          icon: "☕"
+        },
+
+        {
+          name: "복숭아 아이스티",
+          icon: "🍑"
+        },
+
+        {
+          name: "얼박사",
+          icon: "🥤"
+        },
+
+        {
+          name: "아샷추",
+          icon: "🥤"
+        },
+
+        {
+          name: "사이다",
+          icon: "🥤"
+        },
+
+        {
+          name: "콜라",
+          icon: "🥤"
+        },
+
+        {
+          name: "몬스터",
+          icon: "⚡"
+        },
+
+        {
+          name: "초코라떼",
+          icon: "🥛"
+        }
+
+      ]
+
+    };
+
+
+    /* =========================
+       현재 상태
+    ========================= */
+
+    let currentCategory = "밥 식사류";
+
+    let cart = [];
+
+
+    /* =========================
+       메뉴 표시
+    ========================= */
+
+    function showCategory(category, button) {
+
+      currentCategory = category;
+
+      document.getElementById("categoryTitle").textContent =
+        getCategoryEmoji(category) + " " + category;
+
+
+      document.querySelectorAll(".category-btn")
+        .forEach(btn => btn.classList.remove("active"));
+
+      button.classList.add("active");
+
+
+      const grid = document.getElementById("menuGrid");
+
+      grid.innerHTML = "";
+
+
+      menus[category].forEach((menu, index) => {
+
+        const card = document.createElement("div");
+
+        card.className = "menu-card";
+
+
+        card.innerHTML = `
+
+          <div>
+
+            <div class="menu-icon">
+              ${menu.icon}
+            </div>
+
+            <div class="menu-name">
+              ${menu.name}
+            </div>
+
+          </div>
+
+          <button
+            class="add-btn"
+            onclick="addToCart('${menu.name.replace(/'/g, "\\'")}')"
+          >
+            담기
+          </button>
+
+        `;
+
+
+        grid.appendChild(card);
+
+      });
+
+    }
+
+
+    /* =========================
+       카테고리 아이콘
+    ========================= */
+
+    function getCategoryEmoji(category) {
+
+      if (category === "밥 식사류") return "🍚";
+
+      if (category === "면 식사류") return "🍜";
+
+      if (category === "간단 사이드") return "🍢";
+
+      if (category === "마시는 음료") return "🥤";
+
+      return "🍴";
+
+    }
+
+
+    /* =========================
+       장바구니 추가
+    ========================= */
+
+    function addToCart(name) {
+
+      const existing = cart.find(item => item.name === name);
+
+
+      if (existing) {
+
+        existing.quantity++;
+
+      } else {
+
+        cart.push({
+          name: name,
+          quantity: 1
+        });
+
+      }
+
+
+      updateCart();
+
+
+      alert(name + " 담았어요! 🛒");
+
+    }
+
+
+    /* =========================
+       장바구니 업데이트
+    ========================= */
+
+    function updateCart() {
+
+      const cartItems =
+        document.getElementById("cartItems");
+
+      const cartCount =
+        document.getElementById("cartCount");
+
+
+      const totalCount =
+        cart.reduce(
+          (sum, item) => sum + item.quantity,
+          0
+        );
+
+
+      cartCount.textContent = totalCount;
+
+
+      if (cart.length === 0) {
+
+        cartItems.innerHTML = `
+          <div class="empty-cart">
+            아직 담은 메뉴가 없어요.
+          </div>
+        `;
+
+        return;
+
+      }
+
+
+      cartItems.innerHTML = "";
+
+
+      cart.forEach((item, index) => {
+
+        const row =
+          document.createElement("div");
+
+        row.className = "cart-item";
+
+
+        row.innerHTML = `
+
+          <div class="cart-item-name">
+            ${item.name}
+          </div>
+
+          <div class="quantity">
+
+            <button
+              onclick="changeQuantity(${index}, -1)"
+            >
+              −
+            </button>
+
+            <strong>
+              ${item.quantity}
+            </strong>
+
+            <button
+              onclick="changeQuantity(${index}, 1)"
+            >
+              +
+            </button>
+
+          </div>
+
+          <button
+            class="delete-btn"
+            onclick="removeFromCart(${index})"
+          >
+            ✕
+          </button>
+
+        `;
+
+
+        cartItems.appendChild(row);
+
+      });
+
+    }
+
+
+    /* =========================
+       수량 변경
+    ========================= */
+
+    function changeQuantity(index, amount) {
+
+      cart[index].quantity += amount;
+
+
+      if (cart[index].quantity <= 0) {
+
+        cart.splice(index, 1);
+
+      }
+
+
+      updateCart();
+
+    }
+
+
+    /* =========================
+       메뉴 삭제
+    ========================= */
+
+    function removeFromCart(index) {
+
+      cart.splice(index, 1);
+
+      updateCart();
+
+    }
+
+
+    /* =========================
+       장바구니 열기
+    ========================= */
+
+    function openCart() {
+
+      document
+        .getElementById("cartOverlay")
+        .classList.add("show");
+
+
+      document
+        .getElementById("orderComplete")
+        .classList.remove("show");
+
+
+      document
+        .getElementById("cartItems")
+        .style.display = "block";
+
+
+      document
+        .querySelector(".order-btn")
+        .style.display = "block";
+
+
+      updateCart();
+
+    }
+
+
+    /* =========================
+       장바구니 닫기
+    ========================= */
+
+    function closeCart() {
+
+      document
+        .getElementById("cartOverlay")
+        .classList.remove("show");
+
+    }
+
+
+    /* =========================
+       주문하기
+    ========================= */
+
+    function placeOrder() {
+
+      if (cart.length === 0) {
+
+        alert("장바구니가 비어있어요!");
+
+        return;
+
+      }
+
+
+      const orderNumber =
+        Math.floor(
+          1000 + Math.random() * 9000
+        );
+
+
+      document
+        .getElementById("orderNumber")
+        .textContent = orderNumber;
+
+
+      document
+        .getElementById("cartItems")
+        .style.display = "none";
+
+
+      document
+        .querySelector(".cart > .order-btn")
+        .style.display = "none";
+
+
+      document
+        .getElementById("orderComplete")
+        .classList.add("show");
+
+
+      cart = [];
+
+      updateCart();
+
+    }
+
+
+    /* =========================
+       처음 실행
+    ========================= */
+
+    showCategory(
+      "밥 식사류",
+      document.querySelector(".category-btn")
+    );
+
+  </script>
 
 </body>
 </html>
